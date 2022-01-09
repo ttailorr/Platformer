@@ -301,7 +301,7 @@ class Player():
         return thetime
 
     def text_to_screen(self, text, x, y):
-        text = myfont.render(str(text/60), True, (0,0,0))
+        text = myfont.render(str(text/60), True, (255,255,255))
         screen.blit(text, (x, y))
 
 player = Player(100, screen_h - 130)
@@ -372,9 +372,9 @@ while(running):
 
         
         if level_status == 1:
-            player.text_to_screen(thetime, 0, 0)
-           
+            player.text_to_screen(thetime, screen_w/2 - 155, screen_h/2 + 50)
             restart.button_to_screen()
+
             if restart.pressed():
                 player.reset(100, screen_h - 130)
                 level_status = 0
