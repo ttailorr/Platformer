@@ -5,7 +5,7 @@ import time
 pygame.init()
 pygame.font.init()
 
-myfont = pygame.font.SysFont('Comic Sans MS', 30)
+myfont = pygame.font.SysFont('Bodoni 72', 30)
 
 frames = 60     #this is the fps that the game will be played at
 clock = pygame.time.Clock()     #the Clock method is used to 'clock' the game at the fps above
@@ -301,7 +301,8 @@ class Player():
         return thetime
 
     def text_to_screen(self, text, x, y):
-        text = myfont.render(str(text/60), True, (255,255,255))
+        text = round(text/60, 2)
+        text = myfont.render(str(text), True, (255,255,255))
         screen.blit(text, (x, y))
 
 player = Player(100, screen_h - 130)
@@ -345,10 +346,10 @@ while(running):
 
     elif in_menu == False:
         screen.blit(background_image, (0, 0))
+        thetime = player.timer(level_status, thetime)
+        player.text_to_screen(thetime, square_size, square_size)
 
         if map == 0:
-            thetime = player.timer(level_status, thetime)
-
             real_world0.world_to_screen()
 
             trap_list.update()
@@ -372,7 +373,6 @@ while(running):
 
         
         if level_status == 1:
-            player.text_to_screen(thetime, screen_w/2 - 155, screen_h/2 + 50)
             restart.button_to_screen()
 
             if restart.pressed():
