@@ -354,6 +354,11 @@ class Player():
 
         return map, level_status, thetime, lives
 
+    def timer(self, level_status, thetime):
+        if level_status == 0:
+            thetime += 1
+        return thetime
+
     def text_to_screen(self, text, x, y, condition):    #condition is for if the text is a number with decimals
         if condition:
             text = round(text/60, 2)
@@ -426,14 +431,14 @@ while(running):
     elif in_menu == False:
 
         if map == 0:            
-            thetime += 1
+            thetime = player.timer(level_status, thetime)
 
             real_world0.map_change(thetime, real_world0, fire_list, True, trap_list, destination_list)
 
             level_status = player.movement(level_status, real_world0, trap_list, destination_list, fire_list)
         
         if map == 1:            
-            thetime += 1
+            thetime = player.timer(level_status, thetime)
 
             real_world1.map_change(thetime, real_world1, fire_list1, False, trap_list1, destination_list1)
 
