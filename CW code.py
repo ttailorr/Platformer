@@ -1,6 +1,5 @@
 import pygame
 from pygame.locals import *
-import time
 
 pygame.init()
 pygame.font.init()
@@ -361,7 +360,6 @@ while(running):
             level_status = player.movement(level_status, real_world0, trap_list, destination_list, fire_list)
         
         if map == 1:
-            screen.blit(background_image, (0, 0))
             real_world1.world_to_screen()
     
             trap_list1.draw(screen)
@@ -389,6 +387,7 @@ while(running):
                 level_status = 0   
                 map = 1 
                 player.reset(100, screen_h - 130)
+                thetime = 0
                 #reset timer
                 timer = 0
             elif completed_button.pressed and map == 1:
