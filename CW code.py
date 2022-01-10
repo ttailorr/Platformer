@@ -23,10 +23,11 @@ in_menu = True
 map = 0
 change_map = False
 
+thetime = 0
+
 lives = 3
 change_lives = True
 
-thetime = 0
 
 #loading in core images
 background_image = pygame.image.load('images/darkbackground.bmp')
@@ -205,6 +206,9 @@ class Player():
 
         self.started = False
 
+        self.lives = 3
+        self.change_lives = True
+
     def movement(self, level_status, the_world, traps, destinations, fires):
         #allowing player to move character
         change_x = 0
@@ -294,6 +298,17 @@ class Player():
 
         return level_status
 
+    def no_lives(self, lives, level_status, thetime, change_lives):
+        if lives == 0:
+            screen.blit(game_over_image, (0, 0))
+            restart.button_to_screen()
+            if restart.pressed():
+                player.reset(100, screen_h - 130)
+                level_status = 0
+                thetime = 0
+                change_lives = True
+                lives = 3
+
     def reset(self, x, y):
         player.__init__(100, screen_h - 130)
 
@@ -354,6 +369,7 @@ while(running):
             screen.blit(background_image, (0, 0))
             thetime = player.timer(level_status, thetime)
             player.text_to_screen(thetime, square_size, square_size, True)
+            player.text_to_screen(lives, screen_w - square_size - 17, square_size, False)
 
             real_world0.world_to_screen()
 
@@ -369,6 +385,7 @@ while(running):
             screen.blit(background_image, (0, 0))
             thetime = player.timer(level_status, thetime)
             player.text_to_screen(thetime, square_size, square_size, True)
+            player.text_to_screen(lives, screen_w - square_size - 17, square_size, False)
 
             real_world1.world_to_screen()
     
@@ -382,24 +399,12 @@ while(running):
         
         if level_status == 1:
             restart.button_to_screen()
-            if lives == 3 and change_lives:
-                lives = 2
-                change_lives = False
-            elif lives == 2 and change_lives:
-                lives = 1
-                change_lives = False
-            elif lives == 1 and change_lives:
-                lives = 0
             
-            if lives == 0:
-                screen.blit(game_over_image, (0, 0))
-                restart.button_to_screen()
-                if restart.pressed():
-                    player.reset(100, screen_h - 130)
-                    level_status = 0
-                    thetime = 0
-                    change_lives = True
-                    lives = 3
+            if change_lives == True:
+                lives -= 1
+                change_lives = False
+
+            player.no_lives(lives, level_status, thetime, change_lives)
 
             if restart.pressed():
                 player.reset(100, screen_h - 130)
@@ -414,13 +419,12 @@ while(running):
             #adding next level button
             completed_button.button_to_screen()
             if completed_button.pressed() and map == 0:
-                #return level status to continueing (0) and change map
+                #return level status and change map
                 level_status = 0   
                 map = 1 
                 player.reset(100, screen_h - 130)
                 thetime = 0
-                #reset timer
-                timer = 0
+                lives = 3
             elif completed_button.pressed and map == 1:
                 level_status = 0
                 map = 2
