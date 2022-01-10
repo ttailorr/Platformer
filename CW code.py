@@ -23,6 +23,8 @@ in_menu = True
 map = 0
 change_map = False
 
+lives = 3
+
 thetime = 0
 
 #loading in core images
@@ -299,8 +301,9 @@ class Player():
 
         return thetime
 
-    def text_to_screen(self, text, x, y):
-        text = round(text/60, 2)
+    def text_to_screen(self, text, x, y, condition):    #condition is for if the text is a number with decimals
+        if condition:
+            text = round(text/60, 2)
         text = myfont.render(str(text), True, (255,255,255))
         screen.blit(text, (x, y))
 
@@ -344,11 +347,12 @@ while(running):
             in_menu = False
 
     elif in_menu == False:
-        screen.blit(background_image, (0, 0))
-        thetime = player.timer(level_status, thetime)
-        player.text_to_screen(thetime, square_size, square_size)
 
         if map == 0:
+            screen.blit(background_image, (0, 0))
+            thetime = player.timer(level_status, thetime)
+            player.text_to_screen(thetime, square_size, square_size, True)
+
             real_world0.world_to_screen()
 
             trap_list.update()
@@ -360,6 +364,10 @@ while(running):
             level_status = player.movement(level_status, real_world0, trap_list, destination_list, fire_list)
         
         if map == 1:
+            screen.blit(background_image, (0, 0))
+            thetime = player.timer(level_status, thetime)
+            player.text_to_screen(thetime, square_size, square_size, True)
+
             real_world1.world_to_screen()
     
             trap_list1.draw(screen)
@@ -372,6 +380,9 @@ while(running):
         
         if level_status == 1:
             restart.button_to_screen()
+            lives -= 1
+            if lives == 0:
+                pass
 
             if restart.pressed():
                 player.reset(100, screen_h - 130)
