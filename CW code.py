@@ -135,6 +135,7 @@ destination_list1 = pygame.sprite.Group()
 #this class will take the world_data and actualise it
 class World():
     def __init__(self, array, traps, destinations, fires):  #constructor
+        
         self.squares_list = []
 
         row_number = 0
@@ -301,6 +302,7 @@ class Player():
     def no_lives(self, lives, level_status, thetime, change_lives):
         if lives == 0:
             screen.blit(game_over_image, (0, 0))
+            player.text_to_screen(thetime, screen_w//2 - 30, screen_h//2 + 20, True)
             restart.button_to_screen()
             if restart.pressed():
                 player.reset(100, screen_h - 130)
