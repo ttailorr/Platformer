@@ -24,6 +24,7 @@ map = 0
 change_map = False
 
 lives = 3
+change_lives = True
 
 thetime = 0
 
@@ -39,6 +40,7 @@ start_image = pygame.image.load('images/start.bmp')
 start_image = pygame.transform.scale(start_image, (100, 50))
 completed = pygame.image.load('images/next.bmp')
 completed = pygame.transform.scale(completed, (100, 50))
+game_over_image = pygame.image.load('images/GameOver.bmp')
 
 
 
@@ -380,14 +382,32 @@ while(running):
         
         if level_status == 1:
             restart.button_to_screen()
-            lives -= 1
+            if lives == 3 and change_lives:
+                lives = 2
+                change_lives = False
+            elif lives == 2 and change_lives:
+                lives = 1
+                change_lives = False
+            elif lives == 1 and change_lives:
+                lives = 0
+            
             if lives == 0:
-                pass
+                screen.blit(game_over_image, (0, 0))
+                restart.button_to_screen()
+                if restart.pressed():
+                    player.reset(100, screen_h - 130)
+                    level_status = 0
+                    thetime = 0
+                    change_lives = True
+                    lives = 3
 
             if restart.pressed():
                 player.reset(100, screen_h - 130)
                 level_status = 0
                 thetime = 0
+                change_lives = True
+                
+
         if level_status == 2:
             #display level completed screen
 
