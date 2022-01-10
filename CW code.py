@@ -167,11 +167,27 @@ class World():
                     fires.add(self.fire)
                 collumn_number += 1
             row_number += 1
-
+    
     def world_to_screen(self):
         for self.square in self.squares_list:
             screen.blit(self.square[0], self.square[1])  # must draw 2 items to screen because each square in the list is a tuple.
                                                # square[0] is the image and square[1] is the rect
+
+    def map_change(self, thetime, theworld, fire, condition, trap, destination):
+        screen.blit(background_image, (0, 0))
+        player.text_to_screen(thetime, square_size, square_size, True)
+        player.text_to_screen(lives, screen_w - square_size - 17, square_size, False)
+        
+        theworld.world_to_screen()
+
+        fire.draw(screen)
+        
+        if condition:
+            trap.update()
+
+        trap.draw(screen)
+
+        destination.draw(screen)
 
 real_world0 = World(world_data0, trap_list, destination_list, fire_list)
 real_world1 = World(world_data1, trap_list1, destination_list1, fire_list1)
@@ -314,18 +330,28 @@ class Player():
     def reset(self, x, y):
         player.__init__(100, screen_h - 130)
 
-    def timer(self, level_status, thetime):
-        if level_status == 0:
-            thetime += 1
+    def next_level(self, map, level_status, thetime, lives):
+        completed_button.button_to_screen()
+        if completed_button.pressed() and map == 0:
+            #return level status and change map
+            level_status = 0   
+            map = 1 
+            player.reset(100, screen_h - 130)
+            thetime = 0
+            lives = 3
+        elif completed_button.pressed and map == 1:
+            level_status = 0
+            map = 2
+            player.reset(100, screen_h - 130)
 
-        return thetime
+        return map, level_status, thetime, lives
 
     def text_to_screen(self, text, x, y, condition):    #condition is for if the text is a number with decimals
         if condition:
             text = round(text/60, 2)
         text = myfont.render(str(text), True, (255,255,255))
         screen.blit(text, (x, y))
-
+        
 player = Player(100, screen_h - 130)
 
 
@@ -348,6 +374,7 @@ class Button():
                 self.clicked = True
         return self.clicked    
 
+
 restart = Button(restart_image, screen_w//2 - 60, screen_h//2 - 41)
 start = Button(start_image, screen_w//2 - 60, screen_h//2 - 25)
 completed_button = Button(completed, screen_w//2 - 50, screen_h//2 - 25)
@@ -367,33 +394,17 @@ while(running):
 
     elif in_menu == False:
 
-        if map == 0:
-            screen.blit(background_image, (0, 0))
-            thetime = player.timer(level_status, thetime)
-            player.text_to_screen(thetime, square_size, square_size, True)
-            player.text_to_screen(lives, screen_w - square_size - 17, square_size, False)
+        if map == 0:            
+            thetime += 1
 
-            real_world0.world_to_screen()
-
-            trap_list.update()
-            trap_list.draw(screen)  #draw is a built in method from the sprite parent class in this case
-            destination_list.draw(screen)
-                
-            fire_list.draw(screen)
+            real_world0.map_change(thetime, real_world0, fire_list, True, trap_list, destination_list)
 
             level_status = player.movement(level_status, real_world0, trap_list, destination_list, fire_list)
         
-        if map == 1:
-            screen.blit(background_image, (0, 0))
-            thetime = player.timer(level_status, thetime)
-            player.text_to_screen(thetime, square_size, square_size, True)
-            player.text_to_screen(lives, screen_w - square_size - 17, square_size, False)
+        if map == 1:            
+            thetime += 1
 
-            real_world1.world_to_screen()
-    
-            trap_list1.draw(screen)
-            fire_list1.draw(screen)
-            destination_list1.draw(screen)
+            real_world1.map_change(thetime, real_world1, fire_list1, False, trap_list1, destination_list1)
 
             level_status = player.movement(level_status, real_world1, trap_list1, destination_list1, fire_list1)
 
@@ -418,19 +429,8 @@ while(running):
         if level_status == 2:
             #display level completed screen
 
-            #adding next level button
-            completed_button.button_to_screen()
-            if completed_button.pressed() and map == 0:
-                #return level status and change map
-                level_status = 0   
-                map = 1 
-                player.reset(100, screen_h - 130)
-                thetime = 0
-                lives = 3
-            elif completed_button.pressed and map == 1:
-                level_status = 0
-                map = 2
-                player.reset(100, screen_h - 130)
+            map, level_status, thetime, lives = player.next_level(map, level_status, thetime, lives)
+            
 
         
     pygame.display.update()
