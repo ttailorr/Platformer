@@ -396,20 +396,15 @@ while(running):
 
         if map == 0:            
             thetime += 1
-
             real_world0.map_change(thetime, real_world0, fire_list, True, trap_list, destination_list)
-
             level_status = player.movement(level_status, real_world0, trap_list, destination_list, fire_list)
         
         if map == 1:            
             thetime += 1
-
             real_world1.map_change(thetime, real_world1, fire_list1, False, trap_list1, destination_list1)
-
             level_status = player.movement(level_status, real_world1, trap_list1, destination_list1, fire_list1)
 
-
-        
+       
         if level_status == 1:
             restart.button_to_screen()
             
@@ -425,7 +420,6 @@ while(running):
                 thetime = 0
                 change_lives = True
                 
-
         if level_status == 2:
             #display level completed screen
 
