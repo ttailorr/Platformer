@@ -334,6 +334,8 @@ class Player():
                 thetime = 0
                 change_lives = True
                 lives = 3
+            
+        return lives, change_lives
 
     def reset(self, x, y):
         player.__init__(100, screen_h - 130)
@@ -431,16 +433,12 @@ while(running):
     elif in_menu == False:
 
         if map == 0:            
-            thetime += 1
-
             thetime = player.timer(level_status, thetime)
 
             real_world0.map_change(thetime, real_world0, fire_list, True, trap_list, destination_list)
             level_status = player.movement(level_status, real_world0, trap_list, destination_list, fire_list)
         
         if map == 1:            
-            thetime += 1
-
             thetime = player.timer(level_status, thetime)
 
             real_world1.map_change(thetime, real_world1, fire_list1, False, trap_list1, destination_list1)
@@ -454,7 +452,7 @@ while(running):
                 lives -= 1
                 change_lives = False
 
-            player.no_lives(lives, level_status, thetime, change_lives)
+            lives, change_lives = player.no_lives(lives, level_status, thetime, change_lives)
 
             if restart.pressed():
                 player.reset(100, screen_h - 130)
