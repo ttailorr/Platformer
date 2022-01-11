@@ -20,6 +20,8 @@ square_size = 50    #each square in my world array will have pixel size 50*50
 level_status = 0    #1 for level restart, 2 for ongoing, 3 for completed and display completed screem, 4 for next level.
 
 in_menu = True
+in_level_selector = False
+
 map = 0
 change_map = False
 
@@ -42,6 +44,12 @@ start_image = pygame.transform.scale(start_image, (100, 50))
 completed = pygame.image.load('images/next.bmp')
 completed = pygame.transform.scale(completed, (100, 50))
 game_over_image = pygame.image.load('images/GameOver.bmp')
+level_select = pygame.image.load('images/LevelSelect.bmp')
+level_select = pygame.transform.scale(level_select, (150, 50))
+icon1 = pygame.image.load('images/1.bmp')
+icon1 = pygame.transform.scale(icon1, (100, 100))
+icon2 = pygame.image.load('images/2.bmp')
+icon2 = pygame.transform.scale(icon2, (100, 100))
 
 
 
@@ -346,6 +354,11 @@ class Player():
 
         return map, level_status, thetime, lives
 
+    def timer(self, level_status, thetime):
+        if level_status == 0:
+            thetime += 1
+        return thetime
+
     def text_to_screen(self, text, x, y, condition):    #condition is for if the text is a number with decimals
         if condition:
             text = round(text/60, 2)
@@ -376,8 +389,11 @@ class Button():
 
 
 restart = Button(restart_image, screen_w//2 - 60, screen_h//2 - 41)
-start = Button(start_image, screen_w//2 - 60, screen_h//2 - 25)
+start = Button(start_image, screen_w//2 - 120, screen_h//2 - 25)
 completed_button = Button(completed, screen_w//2 - 50, screen_h//2 - 25)
+level_select = Button(level_select, screen_w // 2, screen_h//2 - 25)
+level1_button = Button(icon1, screen_w//2 - 100, screen_h//2 - 100)
+level2_button = Button(icon2, screen_w//2, screen_h//2 - 100)
 
 
 
@@ -388,19 +404,49 @@ while(running):
 
     if in_menu == True:
         screen.blit(menu_background, (0, 0))    
+       
         start.button_to_screen()
         if start.pressed(): #presessed method returns true if button was pressed
             in_menu = False
+        
+        level_select.button_to_screen()
+        if level_select.pressed():
+            in_level_selector = True
 
+        if in_level_selector:
+            screen.blit(menu_background, (0, 0))
+            level1_button.button_to_screen()
+            level2_button.button_to_screen()
+
+            if level1_button.pressed():
+                in_level_selector = False
+                in_menu = False
+                map = 0
+
+            if level2_button.pressed():
+                in_level_selector = False
+                in_menu = False
+                map = 1
+       
     elif in_menu == False:
 
         if map == 0:            
+<<<<<<< HEAD
             thetime += 1
+=======
+            thetime = player.timer(level_status, thetime)
+
+>>>>>>> 1f6231241bf0d76832e8189c9cc68509be7a205e
             real_world0.map_change(thetime, real_world0, fire_list, True, trap_list, destination_list)
             level_status = player.movement(level_status, real_world0, trap_list, destination_list, fire_list)
         
         if map == 1:            
+<<<<<<< HEAD
             thetime += 1
+=======
+            thetime = player.timer(level_status, thetime)
+
+>>>>>>> 1f6231241bf0d76832e8189c9cc68509be7a205e
             real_world1.map_change(thetime, real_world1, fire_list1, False, trap_list1, destination_list1)
             level_status = player.movement(level_status, real_world1, trap_list1, destination_list1, fire_list1)
 
