@@ -431,22 +431,18 @@ while(running):
     elif in_menu == False:
 
         if map == 0:            
-<<<<<<< HEAD
             thetime += 1
-=======
+
             thetime = player.timer(level_status, thetime)
 
->>>>>>> 1f6231241bf0d76832e8189c9cc68509be7a205e
             real_world0.map_change(thetime, real_world0, fire_list, True, trap_list, destination_list)
             level_status = player.movement(level_status, real_world0, trap_list, destination_list, fire_list)
         
         if map == 1:            
-<<<<<<< HEAD
             thetime += 1
-=======
+
             thetime = player.timer(level_status, thetime)
 
->>>>>>> 1f6231241bf0d76832e8189c9cc68509be7a205e
             real_world1.map_change(thetime, real_world1, fire_list1, False, trap_list1, destination_list1)
             level_status = player.movement(level_status, real_world1, trap_list1, destination_list1, fire_list1)
 
