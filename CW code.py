@@ -462,6 +462,7 @@ def display_leaderboard(document, arr, condition): #condition is for whether or 
 
 
 
+
 #game loop below
 running = True      #while the player is alive running will be true
 while(running):
@@ -497,7 +498,7 @@ while(running):
                 in_menu = False
                 map = 1
 
-        if in_leaderboard:
+        if in_leaderboard:  #show the fastest times for each level
             screen.blit(menu_background, (0, 0))
             text_to_screen("LEADERBOARD", screen_w//2 - 90, 100, False)
 
