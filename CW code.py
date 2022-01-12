@@ -21,14 +21,19 @@ level_status = 0    #1 for level restart, 2 for ongoing, 3 for completed and dis
 
 in_menu = True
 in_level_selector = False
+in_leaderboard = False
 
 map = 0
 change_map = False
 
 thetime = 0
+timearray = []
 
 lives = 3
 change_lives = True
+
+appendable = True
+
 
 
 #loading in core images
@@ -50,7 +55,10 @@ icon1 = pygame.image.load('images/1.bmp')
 icon1 = pygame.transform.scale(icon1, (100, 100))
 icon2 = pygame.image.load('images/2.bmp')
 icon2 = pygame.transform.scale(icon2, (100, 100))
-
+level_completed = pygame.image.load('images/LevelCompleted.bmp')
+level_completed = pygame.transform.scale(level_completed, (screen_w, screen_h))
+leaderboard_image = pygame.image.load('images/leaderboardimage.bmp')
+leaderboard_image = pygame.transform.scale(leaderboard_image, (100, 60))
 
 
 world_data1 = [
@@ -90,7 +98,6 @@ world_data0 = [
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
 [1, 1, 2, 1, 9, 9, 9, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]
-
 
 
 class Trap(pygame.sprite.Sprite):   #my Trap class is the child class of pygame's built in sprite class
@@ -183,8 +190,8 @@ class World():
 
     def map_change(self, thetime, theworld, fire, condition, trap, destination):
         screen.blit(background_image, (0, 0))
-        player.text_to_screen(thetime, square_size, square_size, True)
-        player.text_to_screen(lives, screen_w - square_size - 17, square_size, False)
+        text_to_screen(thetime, square_size, square_size, True)
+        text_to_screen(lives, screen_w - square_size - 17, square_size, False)
         
         theworld.world_to_screen()
 
@@ -326,7 +333,7 @@ class Player():
     def no_lives(self, lives, level_status, thetime, change_lives):
         if lives == 0:
             screen.blit(game_over_image, (0, 0))
-            player.text_to_screen(thetime, screen_w//2 - 30, screen_h//2 + 20, True)
+            text_to_screen(thetime, screen_w//2 - 30, screen_h//2 + 20, True)
             restart.button_to_screen()
             if restart.pressed():
                 player.reset(100, screen_h - 130)
@@ -334,6 +341,8 @@ class Player():
                 thetime = 0
                 change_lives = True
                 lives = 3
+            
+        return lives, change_lives
 
     def reset(self, x, y):
         player.__init__(100, screen_h - 130)
@@ -353,17 +362,6 @@ class Player():
             player.reset(100, screen_h - 130)
 
         return map, level_status, thetime, lives
-
-    def timer(self, level_status, thetime):
-        if level_status == 0:
-            thetime += 1
-        return thetime
-
-    def text_to_screen(self, text, x, y, condition):    #condition is for if the text is a number with decimals
-        if condition:
-            text = round(text/60, 2)
-        text = myfont.render(str(text), True, (255,255,255))
-        screen.blit(text, (x, y))
         
 player = Player(100, screen_h - 130)
 
@@ -387,13 +385,57 @@ class Button():
                 self.clicked = True
         return self.clicked    
 
-
 restart = Button(restart_image, screen_w//2 - 60, screen_h//2 - 41)
 start = Button(start_image, screen_w//2 - 120, screen_h//2 - 25)
-completed_button = Button(completed, screen_w//2 - 50, screen_h//2 - 25)
+completed_button = Button(completed, screen_w//2 - 50, screen_h//2 - 75)
 level_select = Button(level_select, screen_w // 2, screen_h//2 - 25)
 level1_button = Button(icon1, screen_w//2 - 100, screen_h//2 - 100)
 level2_button = Button(icon2, screen_w//2, screen_h//2 - 100)
+leaderboard_button = Button(leaderboard_image, screen_w//2 + 150, screen_h//2 - 35)
+
+
+
+def bubble_sort(timearray):
+    # We want to stop passing through the list
+    # as soon as we pass through without swapping any elements
+    has_swapped = True
+    while(has_swapped):
+        for i in range(len(timearray)- 1):
+            if timearray[i] > timearray[i+1]:
+                # Swap
+                timearray[i], timearray[i+1] = timearray[i+1], timearray[i]
+                
+    return timearray
+
+def leaderboard_write(thetime, themap):
+    if themap == 0:
+        thetime = round(thetime/60, 2)
+        if thetime >= 1:
+            file = open("Leaderboard0.txt", "a")
+            file.write(str(thetime))
+            file.write(" \n")
+            file.close()
+
+    if themap == 1:
+        thetime = round(thetime/60, 2)
+        if thetime >= 1:
+            file = open("Leaderboard1.txt", "a")
+            file.write(str(thetime))
+            file.write("\n")
+            file.close()
+
+    return thetime
+
+def timer(level_status, thetime):
+        if level_status == 0:
+            thetime += 1
+        return thetime
+
+def text_to_screen(text, x, y, condition):    #condition is for if the text is a number with decimals
+        if condition:
+            text = round(text/60, 2)
+        text = myfont.render(str(text), True, (255,255,255))
+        screen.blit(text, (x, y))
 
 
 
@@ -413,6 +455,10 @@ while(running):
         if level_select.pressed():
             in_level_selector = True
 
+        leaderboard_button.button_to_screen()
+        if leaderboard_button.pressed():
+            in_leaderboard = True
+
         if in_level_selector:
             screen.blit(menu_background, (0, 0))
             level1_button.button_to_screen()
@@ -427,25 +473,40 @@ while(running):
                 in_level_selector = False
                 in_menu = False
                 map = 1
-       
+
+        if in_leaderboard:
+            screen.blit(menu_background, (0, 0))
+            text_to_screen("LEADERBOARD", screen_w//2 - 90, 100, False)
+            with open("Leaderboard0.txt", "r") as f:
+                if appendable:
+                    for line in f:
+                        if line != "\n":
+                            timearray.append(line)
+                appendable = False
+
+            timearray = bubble_sort(timearray)
+
+            for i in range(len(timearray)):
+                print(timearray[i])
+                
+            
+
+
     elif in_menu == False:
 
         if map == 0:            
-            thetime = player.timer(level_status, thetime)
+            thetime = timer(level_status, thetime)
 
             real_world0.map_change(thetime, real_world0, fire_list, True, trap_list, destination_list)
-
             level_status = player.movement(level_status, real_world0, trap_list, destination_list, fire_list)
         
         if map == 1:            
-            thetime = player.timer(level_status, thetime)
+            thetime = timer(level_status, thetime)
 
             real_world1.map_change(thetime, real_world1, fire_list1, False, trap_list1, destination_list1)
-
             level_status = player.movement(level_status, real_world1, trap_list1, destination_list1, fire_list1)
 
-
-        
+       
         if level_status == 1:
             restart.button_to_screen()
             
@@ -453,7 +514,7 @@ while(running):
                 lives -= 1
                 change_lives = False
 
-            player.no_lives(lives, level_status, thetime, change_lives)
+            lives, change_lives = player.no_lives(lives, level_status, thetime, change_lives)
 
             if restart.pressed():
                 player.reset(100, screen_h - 130)
@@ -461,10 +522,14 @@ while(running):
                 thetime = 0
                 change_lives = True
                 
-
         if level_status == 2:
-            #display level completed screen
-
+            #leaderboard writing
+            if map == 0:
+                thetime = leaderboard_write(thetime, map)
+            elif map == 1:
+                thetime = leaderboard_write(thetime, map)
+            
+            screen.blit(level_completed, (0, 0))
             map, level_status, thetime, lives = player.next_level(map, level_status, thetime, lives)
             
 
