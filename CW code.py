@@ -31,6 +31,7 @@ lives = 3
 change_lives = True
 
 
+
 #loading in core images
 background_image = pygame.image.load('images/darkbackground.bmp')
 background_image = pygame.transform.scale(background_image, (screen_w, screen_h))
@@ -50,7 +51,8 @@ icon1 = pygame.image.load('images/1.bmp')
 icon1 = pygame.transform.scale(icon1, (100, 100))
 icon2 = pygame.image.load('images/2.bmp')
 icon2 = pygame.transform.scale(icon2, (100, 100))
-
+level_completed = pygame.image.load('images/LevelCompleted.bmp')
+level_completed = pygame.transform.scale(level_completed, (screen_w, screen_h))
 
 
 world_data1 = [
@@ -392,7 +394,7 @@ class Button():
 
 restart = Button(restart_image, screen_w//2 - 60, screen_h//2 - 41)
 start = Button(start_image, screen_w//2 - 120, screen_h//2 - 25)
-completed_button = Button(completed, screen_w//2 - 50, screen_h//2 - 25)
+completed_button = Button(completed, screen_w//2 - 50, screen_h//2 - 75)
 level_select = Button(level_select, screen_w // 2, screen_h//2 - 25)
 level1_button = Button(icon1, screen_w//2 - 100, screen_h//2 - 100)
 level2_button = Button(icon2, screen_w//2, screen_h//2 - 100)
@@ -461,8 +463,22 @@ while(running):
                 change_lives = True
                 
         if level_status == 2:
-            #display level completed screen
+            if map == 0:
+                thetime = round(thetime/60, 2)
+                file = open("Leaderboard0.txt", "a")
+                file.write(str(thetime))
+                file.write("\n")
+                file.close()
 
+            if map == 1:
+                thetime = round(thetime, 2)
+                file = open("Leaderboard1.txt", "a")
+                file.write(str(thetime))
+                file.write("\n")
+                file.close
+                
+            
+            screen.blit(level_completed, (0, 0))
             map, level_status, thetime, lives = player.next_level(map, level_status, thetime, lives)
             
 
