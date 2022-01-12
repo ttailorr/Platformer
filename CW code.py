@@ -33,6 +33,7 @@ lives = 3
 change_lives = True
 
 appendable = True
+printable = True
 
 
 
@@ -395,17 +396,23 @@ leaderboard_button = Button(leaderboard_image, screen_w//2 + 150, screen_h//2 - 
 
 
 
-def bubble_sort(timearray):
-    # We want to stop passing through the list
-    # as soon as we pass through without swapping any elements
-    has_swapped = True
-    while(has_swapped):
-        for i in range(len(timearray)- 1):
-            if timearray[i] > timearray[i+1]:
-                # Swap
-                timearray[i], timearray[i+1] = timearray[i+1], timearray[i]
-                
-    return timearray
+def bubblesort(arr):
+    n = len(arr)
+ 
+    # Traverse through all array elements
+    for i in range(n):
+    # range(n) also work but outer loop will
+    # repeat one time more than needed.
+ 
+        # Last i elements are already in place
+        for j in range(0, n-i-1):
+ 
+            # traverse the array from 0 to n-i-1
+            # Swap if the element found is greater
+            # than the next element
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+    return arr
 
 def leaderboard_write(thetime, themap):
     if themap == 0:
@@ -484,12 +491,12 @@ while(running):
                             timearray.append(line)
                 appendable = False
 
-            timearray = bubble_sort(timearray)
-
-            for i in range(len(timearray)):
-                print(timearray[i])
-                
-            
+            if printable:
+                timearray = bubblesort(timearray)
+                for i in range(len(timearray)):
+                    print(timearray[i])
+            printable = False
+                        
 
 
     elif in_menu == False:
