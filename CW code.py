@@ -465,17 +465,19 @@ while(running):
         if level_status == 2:
             if map == 0:
                 thetime = round(thetime/60, 2)
-                file = open("Leaderboard0.txt", "a")
-                file.write(str(thetime))
-                file.write("\n")
-                file.close()
+                if thetime >= 1:
+                    file = open("Leaderboard0.txt", "a")
+                    file.write(str(thetime))
+                    file.write("\n")
+                    file.close()
 
-            if map == 1:
-                thetime = round(thetime, 2)
-                file = open("Leaderboard1.txt", "a")
-                file.write(str(thetime))
-                file.write("\n")
-                file.close
+            if map == 1 and thetime >= 1:
+                thetime = round(thetime/60, 2)
+                if thetime >= 1:
+                    file = open("Leaderboard1.txt", "a")
+                    file.write(str(thetime))
+                    file.write("\n")
+                    file.close
                 
             
             screen.blit(level_completed, (0, 0))
