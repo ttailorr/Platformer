@@ -199,6 +199,25 @@ class World():
 
         destination.draw(screen)
 
+    def leaderboard_write(self, thetime, themap):
+        if themap == 0:
+            thetime = round(thetime/60, 2)
+            if thetime >= 1:
+                file = open("Leaderboard0.txt", "a")
+                file.write(str(thetime))
+                file.write("\n")
+                file.close()
+
+        if themap == 1:
+            thetime = round(thetime/60, 2)
+            if thetime >= 1:
+                file = open("Leaderboard1.txt", "a")
+                file.write(str(thetime))
+                file.write("\n")
+                file.close()
+
+        return thetime
+
 real_world0 = World(world_data0, trap_list, destination_list, fire_list)
 real_world1 = World(world_data1, trap_list1, destination_list1, fire_list1)
 
@@ -463,21 +482,7 @@ while(running):
                 change_lives = True
                 
         if level_status == 2:
-            if map == 0:
-                thetime = round(thetime/60, 2)
-                if thetime >= 1:
-                    file = open("Leaderboard0.txt", "a")
-                    file.write(str(thetime))
-                    file.write("\n")
-                    file.close()
-
-            if map == 1 and thetime >= 1:
-                thetime = round(thetime/60, 2)
-                if thetime >= 1:
-                    file = open("Leaderboard1.txt", "a")
-                    file.write(str(thetime))
-                    file.write("\n")
-                    file.close
+            thetime = real_world0.leaderboard_write(thetime, map)
                 
             
             screen.blit(level_completed, (0, 0))
