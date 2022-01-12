@@ -28,12 +28,13 @@ change_map = False
 
 thetime = 0
 timearray = []
+timearray1 = []
 
 lives = 3
 change_lives = True
 
 appendable = True
-printable = True
+appendable1 = True
 
 
 
@@ -396,23 +397,6 @@ leaderboard_button = Button(leaderboard_image, screen_w//2 + 150, screen_h//2 - 
 
 
 
-def bubblesort(arr):
-    n = len(arr)
- 
-    # Traverse through all array elements
-    for i in range(n):
-    # range(n) also work but outer loop will
-    # repeat one time more than needed.
- 
-        # Last i elements are already in place
-        for j in range(0, n-i-1):
- 
-            # traverse the array from 0 to n-i-1
-            # Swap if the element found is greater
-            # than the next element
-            if arr[j] > arr[j + 1]:
-                arr[j], arr[j + 1] = arr[j + 1], arr[j]
-    return arr
 
 def leaderboard_write(thetime, themap):
     if themap == 0:
@@ -420,7 +404,7 @@ def leaderboard_write(thetime, themap):
         if thetime >= 1:
             file = open("Leaderboard0.txt", "a")
             file.write(str(thetime))
-            file.write(" \n")
+            file.write("\n")
             file.close()
 
     if themap == 1:
@@ -443,6 +427,35 @@ def text_to_screen(text, x, y, condition):    #condition is for if the text is a
             text = round(text/60, 2)
         text = myfont.render(str(text), True, (255,255,255))
         screen.blit(text, (x, y))
+
+def display_leaderboard(document, arr, condition): #condition is for whether or not values have been appended
+    level = document + 1
+
+    if document == 0:   #opens corresponding document
+        f = open("Leaderboard0.txt", "r")
+        horizontalx = 0
+    elif document == 1:
+        f = open("Leaderboard1.txt", "r")
+        horizontalx = 325   #to position the next collumn 325 pixels to the right
+
+    if condition:   
+        for line in f:
+             if line != "\n":   #if the line is not empty
+                arr.append(line)    #append value on line to array
+    condition = False
+
+    arr = sorted(arr)   #sort array into ascending order
+
+
+    x = 0
+    text_to_screen(f"Level {level} times:", 100 + horizontalx, 250, False)  #blits a formatted string to show what level
+    for i in range(5):  #blit quickest five times to screen
+        text_to_screen(timearray[i], 100 + horizontalx, 300 + x, False)
+        x += 50    
+
+  
+    return condition, arr
+
 
 
 
@@ -484,19 +497,13 @@ while(running):
         if in_leaderboard:
             screen.blit(menu_background, (0, 0))
             text_to_screen("LEADERBOARD", screen_w//2 - 90, 100, False)
-            with open("Leaderboard0.txt", "r") as f:
-                if appendable:
-                    for line in f:
-                        if line != "\n":
-                            timearray.append(line)
-                appendable = False
 
-            if printable:
-                timearray = bubblesort(timearray)
-                for i in range(len(timearray)):
-                    print(timearray[i])
-            printable = False
-                        
+            #for level 1
+            appendable, timearray = display_leaderboard(0, timearray, appendable)               
+
+            #for level 2 
+            appendable1, timearray1 = display_leaderboard(1, timearray1, appendable1)                             
+
 
 
     elif in_menu == False:
@@ -530,13 +537,14 @@ while(running):
                 change_lives = True
                 
         if level_status == 2:
+            screen.blit(level_completed, (0, 0))
+            text_to_screen(thetime, screen_w//2 - 20, screen_h//2 + 100, True)
             #leaderboard writing
             if map == 0:
                 thetime = leaderboard_write(thetime, map)
             elif map == 1:
                 thetime = leaderboard_write(thetime, map)
             
-            screen.blit(level_completed, (0, 0))
             map, level_status, thetime, lives = player.next_level(map, level_status, thetime, lives)
             
 
