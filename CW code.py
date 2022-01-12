@@ -395,17 +395,17 @@ leaderboard_button = Button(leaderboard_image, screen_w//2 + 150, screen_h//2 - 
 
 
 
-def bubble_sort (our_list):
+def bubble_sort(timearray):
     # We want to stop passing through the list
     # as soon as we pass through without swapping any elements
     has_swapped = True
-    while(has_swapped) :
-        has_swapped = False
-        for i in range(len(our_list)- 1):
-            if our_list[i] > our_list[i+1]:
+    while(has_swapped):
+        for i in range(len(timearray)- 1):
+            if timearray[i] > timearray[i+1]:
                 # Swap
-                our_list[i], our_list[i+1] = our_list[i+1], our_list[i]
-                has_swapped = True
+                timearray[i], timearray[i+1] = timearray[i+1], timearray[i]
+                
+    return timearray
 
 def leaderboard_write(thetime, themap):
     if themap == 0:
@@ -413,7 +413,7 @@ def leaderboard_write(thetime, themap):
         if thetime >= 1:
             file = open("Leaderboard0.txt", "a")
             file.write(str(thetime))
-            file.write("\n")
+            file.write(" \n")
             file.close()
 
     if themap == 1:
@@ -478,12 +478,17 @@ while(running):
             screen.blit(menu_background, (0, 0))
             text_to_screen("LEADERBOARD", screen_w//2 - 90, 100, False)
             with open("Leaderboard0.txt", "r") as f:
-                for line in f:
-                    if appendable:
-                        timearray.append(line)
+                if appendable:
+                    for line in f:
+                        if line != "\n":
+                            timearray.append(line)
                 appendable = False
-            bubble_sort(timearray)
 
+            timearray = bubble_sort(timearray)
+
+            for i in range(len(timearray)):
+                print(timearray[i])
+                
             
 
 
