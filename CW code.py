@@ -32,6 +32,8 @@ timearray = []
 lives = 3
 change_lives = True
 
+appendable = True
+
 
 
 #loading in core images
@@ -96,7 +98,6 @@ world_data0 = [
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
 [1, 1, 2, 1, 9, 9, 9, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]
-
 
 
 class Trap(pygame.sprite.Sprite):   #my Trap class is the child class of pygame's built in sprite class
@@ -189,8 +190,8 @@ class World():
 
     def map_change(self, thetime, theworld, fire, condition, trap, destination):
         screen.blit(background_image, (0, 0))
-        player.text_to_screen(thetime, square_size, square_size, True)
-        player.text_to_screen(lives, screen_w - square_size - 17, square_size, False)
+        text_to_screen(thetime, square_size, square_size, True)
+        text_to_screen(lives, screen_w - square_size - 17, square_size, False)
         
         theworld.world_to_screen()
 
@@ -202,25 +203,6 @@ class World():
         trap.draw(screen)
 
         destination.draw(screen)
-
-    def leaderboard_write(self, thetime, themap):
-        if themap == 0:
-            thetime = round(thetime/60, 2)
-            if thetime >= 1:
-                file = open("Leaderboard0.txt", "a")
-                file.write(str(thetime))
-                file.write("\n")
-                file.close()
-
-        if themap == 1:
-            thetime = round(thetime/60, 2)
-            if thetime >= 1:
-                file = open("Leaderboard1.txt", "a")
-                file.write(str(thetime))
-                file.write("\n")
-                file.close()
-
-        return thetime
 
 real_world0 = World(world_data0, trap_list, destination_list, fire_list)
 real_world1 = World(world_data1, trap_list1, destination_list1, fire_list1)
@@ -351,7 +333,7 @@ class Player():
     def no_lives(self, lives, level_status, thetime, change_lives):
         if lives == 0:
             screen.blit(game_over_image, (0, 0))
-            player.text_to_screen(thetime, screen_w//2 - 30, screen_h//2 + 20, True)
+            text_to_screen(thetime, screen_w//2 - 30, screen_h//2 + 20, True)
             restart.button_to_screen()
             if restart.pressed():
                 player.reset(100, screen_h - 130)
@@ -380,17 +362,6 @@ class Player():
             player.reset(100, screen_h - 130)
 
         return map, level_status, thetime, lives
-
-    def timer(self, level_status, thetime):
-        if level_status == 0:
-            thetime += 1
-        return thetime
-
-    def text_to_screen(self, text, x, y, condition):    #condition is for if the text is a number with decimals
-        if condition:
-            text = round(text/60, 2)
-        text = myfont.render(str(text), True, (255,255,255))
-        screen.blit(text, (x, y))
         
 player = Player(100, screen_h - 130)
 
@@ -414,7 +385,6 @@ class Button():
                 self.clicked = True
         return self.clicked    
 
-
 restart = Button(restart_image, screen_w//2 - 60, screen_h//2 - 41)
 start = Button(start_image, screen_w//2 - 120, screen_h//2 - 25)
 completed_button = Button(completed, screen_w//2 - 50, screen_h//2 - 75)
@@ -422,6 +392,50 @@ level_select = Button(level_select, screen_w // 2, screen_h//2 - 25)
 level1_button = Button(icon1, screen_w//2 - 100, screen_h//2 - 100)
 level2_button = Button(icon2, screen_w//2, screen_h//2 - 100)
 leaderboard_button = Button(leaderboard_image, screen_w//2 + 150, screen_h//2 - 35)
+
+
+
+def bubble_sort (our_list):
+    # We want to stop passing through the list
+    # as soon as we pass through without swapping any elements
+    has_swapped = True
+    while(has_swapped) :
+        has_swapped = False
+        for i in range(len(our_list)- 1):
+            if our_list[i] > our_list[i+1]:
+                # Swap
+                our_list[i], our_list[i+1] = our_list[i+1], our_list[i]
+                has_swapped = True
+
+def leaderboard_write(thetime, themap):
+    if themap == 0:
+        thetime = round(thetime/60, 2)
+        if thetime >= 1:
+            file = open("Leaderboard0.txt", "a")
+            file.write(str(thetime))
+            file.write("\n")
+            file.close()
+
+    if themap == 1:
+        thetime = round(thetime/60, 2)
+        if thetime >= 1:
+            file = open("Leaderboard1.txt", "a")
+            file.write(str(thetime))
+            file.write("\n")
+            file.close()
+
+    return thetime
+
+def timer(level_status, thetime):
+        if level_status == 0:
+            thetime += 1
+        return thetime
+
+def text_to_screen(text, x, y, condition):    #condition is for if the text is a number with decimals
+        if condition:
+            text = round(text/60, 2)
+        text = myfont.render(str(text), True, (255,255,255))
+        screen.blit(text, (x, y))
 
 
 
@@ -462,18 +476,27 @@ while(running):
 
         if in_leaderboard:
             screen.blit(menu_background, (0, 0))
-            player.text_to_screen("LEADERBOARD", screen_w//2 - 90, 100, False)
-       
+            text_to_screen("LEADERBOARD", screen_w//2 - 90, 100, False)
+            with open("Leaderboard0.txt", "r") as f:
+                for line in f:
+                    if appendable:
+                        timearray.append(line)
+                appendable = False
+            bubble_sort(timearray)
+
+            
+
+
     elif in_menu == False:
 
         if map == 0:            
-            thetime = player.timer(level_status, thetime)
+            thetime = timer(level_status, thetime)
 
             real_world0.map_change(thetime, real_world0, fire_list, True, trap_list, destination_list)
             level_status = player.movement(level_status, real_world0, trap_list, destination_list, fire_list)
         
         if map == 1:            
-            thetime = player.timer(level_status, thetime)
+            thetime = timer(level_status, thetime)
 
             real_world1.map_change(thetime, real_world1, fire_list1, False, trap_list1, destination_list1)
             level_status = player.movement(level_status, real_world1, trap_list1, destination_list1, fire_list1)
@@ -496,8 +519,10 @@ while(running):
                 
         if level_status == 2:
             #leaderboard writing
-            thetime = real_world0.leaderboard_write(thetime, map)
-                
+            if map == 0:
+                thetime = leaderboard_write(thetime, map)
+            elif map == 1:
+                thetime = leaderboard_write(thetime, map)
             
             screen.blit(level_completed, (0, 0))
             map, level_status, thetime, lives = player.next_level(map, level_status, thetime, lives)
