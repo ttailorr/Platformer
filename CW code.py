@@ -477,14 +477,3 @@ while(running):
 
 pygame.quit()
 
-
-
-#to get the time at the start of the thingy
-#start = time.time()
-
-#to get current time
-#time.time() - start
-
-#to get time passed since parameter
-#parameter = time.time
-#time.ctime(parameter)  -->    gives time passed since the parameter
