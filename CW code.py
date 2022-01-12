@@ -450,7 +450,10 @@ def display_leaderboard(document, arr, condition): #condition is for whether or 
     x = 0
     text_to_screen(f"Level {level} times:", 100 + horizontalx, 250, False)  #blits a formatted string to show what level
     for i in range(5):  #blit quickest five times to screen
-        text_to_screen(timearray[i], 100 + horizontalx, 300 + x, False)
+        if document == 0:
+            text_to_screen(timearray[i], 100 + horizontalx, 300 + x, False)
+        if document == 1:
+            text_to_screen(timearray1[i], 100 + horizontalx, 300 + x, False)
         x += 50    
 
   
