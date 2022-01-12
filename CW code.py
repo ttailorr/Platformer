@@ -21,6 +21,7 @@ level_status = 0    #1 for level restart, 2 for ongoing, 3 for completed and dis
 
 in_menu = True
 in_level_selector = False
+in_leaderboard = False
 
 map = 0
 change_map = False
@@ -53,6 +54,8 @@ icon2 = pygame.image.load('images/2.bmp')
 icon2 = pygame.transform.scale(icon2, (100, 100))
 level_completed = pygame.image.load('images/LevelCompleted.bmp')
 level_completed = pygame.transform.scale(level_completed, (screen_w, screen_h))
+leaderboard_image = pygame.image.load('images/leaderboardimage.bmp')
+leaderboard_image = pygame.transform.scale(leaderboard_image, (100, 60))
 
 
 world_data1 = [
@@ -417,6 +420,7 @@ completed_button = Button(completed, screen_w//2 - 50, screen_h//2 - 75)
 level_select = Button(level_select, screen_w // 2, screen_h//2 - 25)
 level1_button = Button(icon1, screen_w//2 - 100, screen_h//2 - 100)
 level2_button = Button(icon2, screen_w//2, screen_h//2 - 100)
+leaderboard_button = Button(leaderboard_image, screen_w//2 + 150, screen_h//2 - 35)
 
 
 
@@ -436,6 +440,10 @@ while(running):
         if level_select.pressed():
             in_level_selector = True
 
+        leaderboard_button.button_to_screen()
+        if leaderboard_button.pressed():
+            in_leaderboard = True
+
         if in_level_selector:
             screen.blit(menu_background, (0, 0))
             level1_button.button_to_screen()
@@ -450,6 +458,11 @@ while(running):
                 in_level_selector = False
                 in_menu = False
                 map = 1
+
+        if in_leaderboard:
+            screen.blit(menu_background, (0, 0))
+            player.text_to_screen("LEADERBOARD", screen_w//2 - 90, 100, False)
+            
        
     elif in_menu == False:
 
@@ -482,6 +495,7 @@ while(running):
                 change_lives = True
                 
         if level_status == 2:
+            #leaderboard writing
             thetime = real_world0.leaderboard_write(thetime, map)
                 
             
