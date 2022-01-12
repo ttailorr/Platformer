@@ -27,6 +27,7 @@ map = 0
 change_map = False
 
 thetime = 0
+timearray = []
 
 lives = 3
 change_lives = True
@@ -462,7 +463,6 @@ while(running):
         if in_leaderboard:
             screen.blit(menu_background, (0, 0))
             player.text_to_screen("LEADERBOARD", screen_w//2 - 90, 100, False)
-            
        
     elif in_menu == False:
 
