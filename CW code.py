@@ -1,3 +1,4 @@
+from string import printable
 import pygame
 from pygame.locals import *
 
@@ -35,6 +36,8 @@ change_lives = True
 
 appendable = True
 appendable1 = True
+printable = True
+
 
 
 
@@ -349,21 +352,27 @@ class Player():
     def reset(self, x, y):
         player.__init__(100, screen_h - 130)
 
-    def next_level(self, map, level_status, thetime, lives):
+    def next_level(self, map, level_status, thetime, lives, condition): #condition is for whether or not we can display time
         completed_button.button_to_screen()
+        condition = False
+
         if completed_button.pressed() and map == 0:
             #return level status and change map
             level_status = 0   
             map = 1 
             player.reset(100, screen_h - 130)
-            thetime = 0
+            
             lives = 3
+            condition = True
+            
         elif completed_button.pressed and map == 1:
             level_status = 0
             map = 2
             player.reset(100, screen_h - 130)
+            condition = True
+        
 
-        return map, level_status, thetime, lives
+        return map, level_status, thetime, lives, condition
         
 player = Player(100, screen_h - 130)
 
@@ -423,10 +432,13 @@ def timer(level_status, thetime):
         return thetime
 
 def text_to_screen(text, x, y, condition):    #condition is for if the text is a number with decimals
-        if condition:
-            text = round(text/60, 2)
-        text = myfont.render(str(text), True, (255,255,255))
-        screen.blit(text, (x, y))
+    if condition:
+        text = round(text/60, 2)
+    text = myfont.render(str(text), True, (255,255,255))
+    screen.blit(text, (x, y))
+
+    condition = False
+    return condition
 
 def display_leaderboard(document, arr, condition): #condition is for whether or not values have been appended
     level = document + 1
@@ -540,16 +552,16 @@ while(running):
                 thetime = 0
                 change_lives = True
                 
-        if level_status == 2:
+        if level_status == 2:    
             screen.blit(level_completed, (0, 0))
-            text_to_screen(thetime, screen_w//2 - 20, screen_h//2 + 100, True)
+            printable = text_to_screen(thetime, screen_w//2 - 20, screen_h//2 + 100, True)
             #leaderboard writing
-            if map == 0:
+            if map == 0 and printable:
                 thetime = leaderboard_write(thetime, map)
-            elif map == 1:
+            elif map == 0 and printable:
                 thetime = leaderboard_write(thetime, map)
             
-            map, level_status, thetime, lives = player.next_level(map, level_status, thetime, lives)
+            map, level_status, thetime, lives, printable = player.next_level(map, level_status, thetime, lives, printable)
             
 
         
