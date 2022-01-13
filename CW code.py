@@ -453,7 +453,7 @@ def display_leaderboard(document, arr, condition): #condition is for whether or 
 
     if condition:   
         for line in f:
-             if line != "\n":   #if the line is not empty
+            if line != "\n":   #if the line is not empty
                 arr.append(line)    #append value on line to array
     condition = False
 
@@ -463,10 +463,7 @@ def display_leaderboard(document, arr, condition): #condition is for whether or 
     x = 0
     text_to_screen(f"Level {level} times:", 100 + horizontalx, 250, False)  #blits a formatted string to show what level
     for i in range(5):  #blit quickest five times to screen
-        if document == 0:
-            text_to_screen(timearray[i], 100 + horizontalx, 300 + x, False)
-        if document == 1:
-            text_to_screen(timearray1[i], 100 + horizontalx, 300 + x, False)
+        text_to_screen(arr[i], 100 + horizontalx, 300 + x, False)
         x += 50    
 
   
@@ -516,7 +513,7 @@ while(running):
             text_to_screen("LEADERBOARD", screen_w//2 - 90, 100, False)
 
             #for level 1
-            appendable, timearray = display_leaderboard(0, timearray, appendable)               
+            appendable, timearray = display_leaderboard(0, timearray, appendable)            
 
             #for level 2 
             appendable1, timearray1 = display_leaderboard(1, timearray1, appendable1)                             
