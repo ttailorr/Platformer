@@ -361,7 +361,7 @@ class Player():
             level_status = 0   
             map = 1 
             player.reset(100, screen_h - 130)
-            
+            thetime = 0
             lives = 3
             condition = True
             
@@ -370,6 +370,7 @@ class Player():
             map = 2
             player.reset(100, screen_h - 130)
             condition = True
+            thetime = 0
         
 
         return map, level_status, thetime, lives, condition
@@ -554,12 +555,14 @@ while(running):
                 
         if level_status == 2:    
             screen.blit(level_completed, (0, 0))
-            printable = text_to_screen(thetime, screen_w//2 - 20, screen_h//2 + 100, True)
+            
             #leaderboard writing
             if map == 0 and printable:
-                thetime = leaderboard_write(thetime, map)
-            elif map == 0 and printable:
-                thetime = leaderboard_write(thetime, map)
+                leaderboard_write(thetime, map)
+            elif map == 1 and printable:
+                leaderboard_write(thetime, map)
+
+            printable = text_to_screen(thetime, screen_w//2 - 20, screen_h//2 + 100, True)
             
             map, level_status, thetime, lives, printable = player.next_level(map, level_status, thetime, lives, printable)
             
