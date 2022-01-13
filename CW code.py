@@ -64,6 +64,8 @@ level_completed = pygame.image.load('images/LevelCompleted.bmp')
 level_completed = pygame.transform.scale(level_completed, (screen_w, screen_h))
 leaderboard_image = pygame.image.load('images/leaderboardimage.bmp')
 leaderboard_image = pygame.transform.scale(leaderboard_image, (100, 60))
+back_image = pygame.image.load('images/back_to_menu.bmp')
+back_image = pygame.transform.scale(back_image, (70, 56))
 
 
 world_data1 = [
@@ -404,6 +406,7 @@ level_select = Button(level_select, screen_w // 2, screen_h//2 - 25)
 level1_button = Button(icon1, screen_w//2 - 100, screen_h//2 - 100)
 level2_button = Button(icon2, screen_w//2, screen_h//2 - 100)
 leaderboard_button = Button(leaderboard_image, screen_w//2 + 150, screen_h//2 - 35)
+to_menu = Button(back_image, screen_w//2 - 35, 0)
 
 
 
@@ -479,6 +482,10 @@ while(running):
     clock.tick(frames) #game will clock frames times per second
 
     if in_menu == True:
+        thetime = 0
+        map = 0
+        lives = 3
+        level_status = 0
         screen.blit(menu_background, (0, 0))    
        
         start.button_to_screen()
@@ -495,6 +502,12 @@ while(running):
 
         if in_level_selector:
             screen.blit(menu_background, (0, 0))
+            
+            to_menu.button_to_screen()
+            if to_menu.pressed():
+                in_menu = True
+                in_level_selector = False
+
             level1_button.button_to_screen()
             level2_button.button_to_screen()
 
@@ -510,6 +523,12 @@ while(running):
 
         if in_leaderboard:  #show the fastest times for each level
             screen.blit(menu_background, (0, 0))
+
+            to_menu.button_to_screen()
+            if to_menu.pressed():
+                in_menu = True
+                in_leaderboard = False
+
             text_to_screen("LEADERBOARD", screen_w//2 - 90, 100, False)
 
             #for level 1
@@ -527,12 +546,21 @@ while(running):
 
             real_world0.map_change(thetime, real_world0, fire_list, True, trap_list, destination_list)
             level_status = player.movement(level_status, real_world0, trap_list, destination_list, fire_list)
+
+            to_menu.button_to_screen()
+            if to_menu.pressed():
+                in_menu = True
+                thetime = 0
         
         if map == 1:            
             thetime = timer(level_status, thetime)
 
             real_world1.map_change(thetime, real_world1, fire_list1, False, trap_list1, destination_list1)
             level_status = player.movement(level_status, real_world1, trap_list1, destination_list1, fire_list1)
+
+            to_menu.button_to_screen()
+            if to_menu.pressed():
+                in_menu = True
 
        
         if level_status == 1:
@@ -549,9 +577,20 @@ while(running):
                 level_status = 0
                 thetime = 0
                 change_lives = True
+
+            to_menu.button_to_screen()
+            if to_menu.pressed():
+                in_menu = True
+                level_status = 0
+                
                 
         if level_status == 2:    
             screen.blit(level_completed, (0, 0))
+
+            to_menu.button_to_screen()
+            if to_menu.pressed():
+                in_menu = True
+                level_status = 0
             
             #leaderboard writing
             if map == 0 and printable:
