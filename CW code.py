@@ -1,9 +1,11 @@
 from string import printable
 import pygame
 from pygame.locals import *
+from pygame import mixer
 
 pygame.init()
 pygame.font.init()
+
 
 myfont = pygame.font.SysFont('Bodoni 72', 30)
 
@@ -192,8 +194,7 @@ class World():
     
     def world_to_screen(self):
         for self.square in self.squares_list:
-            screen.blit(self.square[0], self.square[1])  # must draw 2 items to screen because each square in the list is a tuple.
-                                               # square[0] is the image and square[1] is the rect
+            screen.blit(self.square[0], self.square[1])  # must draw 2 items to screen because each square in the list is a tuple.                                               # square[0] is the image and square[1] is the rect
 
     def map_change(self, thetime, theworld, fire, condition, trap, destination):
         screen.blit(background_image, (0, 0))
