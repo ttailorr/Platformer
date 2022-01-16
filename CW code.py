@@ -1,19 +1,22 @@
 from string import printable
 import pygame
 from pygame.locals import *
+from pygame import mixer
 
 pygame.init()
 pygame.font.init()
 
+pygame.mixer.pre_init(44100, -16, 2, 512)   #initialising some variables for the mixer
+mixer.init()
 
 myfont = pygame.font.SysFont('Bodoni 72', 30)
 
-frames = 60     #this is the fps that the game will be played at
+frames = 60     #this is the fps that the game will be Played at
 clock = pygame.time.Clock()     #the Clock method is used to 'clock' the game at the fps above
 
 
 screen_w = 1000     #this is the width of the window
-screen_h = 800      #this is the height of the window where the game is played
+screen_h = 800      #this is the height of the window where the game is Played
 
 screen = pygame.display.set_mode((screen_w, screen_h))  #this creates the game window
 
@@ -39,7 +42,8 @@ appendable = True
 appendable1 = True
 printable = True
 
-
+played_gameover_sound = False
+completed_sound_played = False
 
 
 #loading in core images
@@ -67,6 +71,16 @@ leaderboard_image = pygame.image.load('images/leaderboardimage.bmp')
 leaderboard_image = pygame.transform.scale(leaderboard_image, (100, 60))
 back_image = pygame.image.load('images/back_to_menu.bmp')
 back_image = pygame.transform.scale(back_image, (70, 56))
+
+
+
+#loading in core sounds
+button_click_sound = pygame.mixer.Sound('Sounds/button_sound.wav') #cannot use mp3 format
+button_click_sound.set_volume(0.2)
+game_over_sound = pygame.mixer.Sound('Sounds/roblox_oof.wav')
+game_over_sound.set_volume(0.3)
+level_complete_sound = pygame.mixer.Sound('Sounds/level_win_sound.wav')
+level_complete_sound.set_volume(0.2)
 
 
 world_data1 = [
@@ -354,9 +368,10 @@ class Player():
     def reset(self, x, y):
         player.__init__(100, screen_h - 130)
 
-    def next_level(self, map, level_status, thetime, lives, condition): #condition is for whether or not we can display time
+    def next_level(self, map, level_status, thetime, lives, condition, sound_condition): #condition is for whether or not we can display time
         completed_button.button_to_screen()
         condition = False
+        sound_condition = True
 
         if completed_button.pressed() and map == 0:
             #return level status and change map
@@ -375,7 +390,7 @@ class Player():
             thetime = 0
         
 
-        return map, level_status, thetime, lives, condition
+        return map, level_status, thetime, lives, condition, sound_condition
         
 player = Player(100, screen_h - 130)
 
@@ -396,7 +411,9 @@ class Button():
         mouse_position = pygame.mouse.get_pos() #variable stores mouse co-ordinates
         if self.rect.collidepoint(mouse_position):  #if button collides with mouse co-ordinates
             if pygame.mouse.get_pressed()[0] == 1:  #and if button has been pressed
-                self.clicked = True
+                self.clicked = True          
+                button_click_sound.play()
+               
         return self.clicked    
 
 restart = Button(restart_image, screen_w//2 - 60, screen_h//2 - 41)
@@ -491,6 +508,7 @@ while(running):
         start.button_to_screen()
         if start.pressed(): #presessed method returns true if button was pressed
             in_menu = False
+            
         
         level_select.button_to_screen()
         if level_select.pressed():
@@ -564,6 +582,9 @@ while(running):
 
        
         if level_status == 1:
+            if played_gameover_sound == False:
+                game_over_sound.play()
+                played_gameover_sound = True
             restart.button_to_screen()
             
             if change_lives == True:
@@ -577,14 +598,19 @@ while(running):
                 level_status = 0
                 thetime = 0
                 change_lives = True
+                played_gameover_sound = False
 
             to_menu.button_to_screen()
             if to_menu.pressed():
                 in_menu = True
                 level_status = 0
+                played_gameover_sound = False
                 
                 
-        if level_status == 2:    
+        if level_status == 2:
+            if completed_sound_played == False:
+                level_complete_sound.play()
+                    
             screen.blit(level_completed, (0, 0))
 
             to_menu.button_to_screen()
@@ -600,7 +626,7 @@ while(running):
 
             printable = text_to_screen(thetime, screen_w//2 - 20, screen_h//2 + 100, True)
             
-            map, level_status, thetime, lives, printable = player.next_level(map, level_status, thetime, lives, printable)
+            map, level_status, thetime, lives, printable, completed_sound_played = player.next_level(map, level_status, thetime, lives, printable, completed_sound_played)
             
 
         
