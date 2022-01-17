@@ -10,7 +10,7 @@ pygame.font.init()
 
 my_os = platform.system()   #'Darwin' for macOS, 'Cygwin' for windows
 print(my_os)
-if my_os == "cygwin":
+if my_os == "Cygwin":
     from pygame import mixer       #use this for windows
     pygame.mixer.pre_init(44100, -16, 2, 512)   #initialising some variables for the mixer
     mixer.init()
