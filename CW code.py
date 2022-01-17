@@ -1,15 +1,22 @@
 from string import printable
 import pygame
 from pygame.locals import *
-#from pygame import mixer       #use this for windows
-import subprocess       #use this for mac
 
+import platform     #to identify Operating system
 
 pygame.init()
 pygame.font.init()
 
-#pygame.mixer.pre_init(44100, -16, 2, 512)   #initialising some variables for the mixer
-#mixer.init()
+
+my_os = platform.system()   #'Darwin' for macOS, 'Cygwin' for windows
+print(my_os)
+if my_os == "cygwin":
+    from pygame import mixer       #use this for windows
+    pygame.mixer.pre_init(44100, -16, 2, 512)   #initialising some variables for the mixer
+    mixer.init()
+elif my_os == "Darwin":
+    import subprocess       #use this for mac
+
 
 myfont = pygame.font.SysFont('Bodoni 72', 30)
 
@@ -77,12 +84,13 @@ back_image = pygame.transform.scale(back_image, (70, 56))
 
 
 #loading in core sounds
-#button_click_sound = pygame.mixer.Sound('Sounds/button_sound.wav') #cannot use mp3 format
-#button_click_sound.set_volume(0.2)
-#game_over_sound = pygame.mixer.Sound('Sounds/roblox_oof.wav')
-#game_over_sound.set_volume(0.3)
-#level_complete_sound = pygame.mixer.Sound('Sounds/level_win_sound.wav')
-#level_complete_sound.set_volume(0.2)
+if my_os == "Cygwin":
+    button_click_sound = pygame.mixer.Sound('Sounds/button_sound.wav') #cannot use mp3 format
+    button_click_sound.set_volume(0.2)
+    game_over_sound = pygame.mixer.Sound('Sounds/roblox_oof.wav')
+    game_over_sound.set_volume(0.3)
+    level_complete_sound = pygame.mixer.Sound('Sounds/level_win_sound.wav')
+    level_complete_sound.set_volume(0.2)
 
 
 world_data1 = [
@@ -413,9 +421,11 @@ class Button():
         mouse_position = pygame.mouse.get_pos() #variable stores mouse co-ordinates
         if self.rect.collidepoint(mouse_position):  #if button collides with mouse co-ordinates
             if pygame.mouse.get_pressed()[0] == 1:  #and if button has been pressed
-                self.clicked = True          
-                #button_click_sound.play()      #use for windows
-                subprocess.call(["afplay", "Sounds/button_sound.wav"])     #use for mac
+                self.clicked = True  
+                if my_os == "Cygwin":        
+                    button_click_sound.play()      #use for windows
+                elif my_os == "Darwin":
+                    subprocess.call(["afplay", "Sounds/button_sound.wav"])     #use for mac
                
         return self.clicked    
 
@@ -595,8 +605,12 @@ while(running):
             lives, change_lives = player.no_lives(lives, level_status, thetime, change_lives)
 
             if played_gameover_sound == False:
-                #game_over_sound.play()     #use for windows
-                #subprocess.call(["afplay", "Sounds/roblox_oof.wav"])       #use for mac
+                if my_os == "Darwin":
+                    #subprocess.call(["afplay", "Sounds/roblox_oof.wav"])       #use for mac
+                    pass
+                elif my_os == "Cygwin":
+                    game_over_sound.play()     #use for windows
+                
                 played_gameover_sound = True
 
             if restart.pressed():
@@ -615,8 +629,10 @@ while(running):
                 
         if level_status == 2:
             if completed_sound_played == False:
-                #level_complete_sound.play()
-                subprocess.call(["afplay", "Sounds/level_win_sound.wav"])      #use for mac
+                if my_os == "Darwin":
+                    subprocess.call(["afplay", "Sounds/level_win_sound.wav"])      #use for mac
+                elif my_os == "Cygwin":
+                    level_complete_sound.play()
                     
             screen.blit(level_completed, (0, 0))
 
