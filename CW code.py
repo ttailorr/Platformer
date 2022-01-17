@@ -124,8 +124,8 @@ world_data0 = [
 [1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 2, 2, 1], 
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 7, 0, 5, 0, 0, 0, 1], 
 [1, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 7, 0, 0, 2, 2, 4, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 1], 
-[1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
+[1, 7, 0, 0, 2, 2, 4, 2, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 1], 
+[1, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 7, 0, 0, 0, 0, 1], 
 [1, 0, 2, 0, 0, 7, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
 [1, 0, 0, 2, 0, 0, 2, 2, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 1], 
@@ -175,10 +175,10 @@ class Checkpoint(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self) #calls the constructor of pygame's sprite class
         image = pygame.image.load('images/dirt.bmp')
-        self.image = pygame.transform.scale(image, (square_size, square_size))
+        self.image = pygame.transform.scale(image, (square_size, square_size//2))
         self.rect = self.image.get_rect()
         self.rect.x = x
-        self.rect.y = y
+        self.rect.y = y + square_size//2
 
 checkpoint_list = pygame.sprite.Group()
 
@@ -371,10 +371,11 @@ class Player():
             if pygame.sprite.spritecollide(self, destinations, False):
                 level_status = 2
             if pygame.sprite.spritecollide(self, checkpoints, False):
-                change_y = 0
+                #change_y = 0
                 if map == 0:
                     x = square_size * 6
-                    y = square_size * 4
+                    y = square_size * 5
+                    
                 
 
             self.rect.x += change_x
@@ -547,7 +548,9 @@ while(running):
         map = 0
         lives = 3
         level_status = 0
-        screen.blit(menu_background, (0, 0))    
+        screen.blit(menu_background, (0, 0))
+        respawn0x = 100
+        respawn0y = screen_h - 130   
        
         start.button_to_screen()
         if start.pressed(): #presessed method returns true if button was pressed
@@ -611,19 +614,25 @@ while(running):
 
             to_menu.button_to_screen()
             if to_menu.pressed():
+                respawn0x = 100
+                respawn0y = screen_h - 130
+                player.reset(respawn0x, respawn0y)
                 in_menu = True
                 thetime = 0
         
         if map == 1:            
             thetime = timer(level_status, thetime)
 
-            real_world1.map_change(thetime, real_world1, fire_list1, False, trap_list1, destination_list1)
-            level_status = player.movement(level_status, real_world1, trap_list1, destination_list1, fire_list1)
+            real_world1.map_change(thetime, real_world1, fire_list1, False, trap_list1, destination_list1, checkpoint_list)
+            level_status, respawn0x, respawn0y = player.movement(level_status, real_world1, trap_list1, destination_list1, fire_list1, checkpoint_list, respawn0x, respawn0y)
 
             to_menu.button_to_screen()
             if to_menu.pressed():
+                respawn0x = 100
+                respawn0y = screen_h - 130
+                player.reset(respawn0x, respawn0y)
                 in_menu = True
-
+                thetime = 0
        
 
         if level_status == 1:
