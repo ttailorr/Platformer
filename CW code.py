@@ -1,17 +1,19 @@
 from string import printable
 import pygame
 from pygame.locals import *
-from pygame import mixer
+#from pygame import mixer       #use this for windows
+import subprocess       #use this for mac
+
 
 pygame.init()
 pygame.font.init()
 
-pygame.mixer.pre_init(44100, -16, 2, 512)   #initialising some variables for the mixer
-mixer.init()
+#pygame.mixer.pre_init(44100, -16, 2, 512)   #initialising some variables for the mixer
+#mixer.init()
 
 myfont = pygame.font.SysFont('Bodoni 72', 30)
 
-frames = 60     #this is the fps that the game will be Played at
+frames = 90     #this is the fps that the game will be Played at.   Use 90 for mac, 60 for windows
 clock = pygame.time.Clock()     #the Clock method is used to 'clock' the game at the fps above
 
 
@@ -75,12 +77,12 @@ back_image = pygame.transform.scale(back_image, (70, 56))
 
 
 #loading in core sounds
-button_click_sound = pygame.mixer.Sound('Sounds/button_sound.wav') #cannot use mp3 format
-button_click_sound.set_volume(0.2)
-game_over_sound = pygame.mixer.Sound('Sounds/roblox_oof.wav')
-game_over_sound.set_volume(0.3)
-level_complete_sound = pygame.mixer.Sound('Sounds/level_win_sound.wav')
-level_complete_sound.set_volume(0.2)
+#button_click_sound = pygame.mixer.Sound('Sounds/button_sound.wav') #cannot use mp3 format
+#button_click_sound.set_volume(0.2)
+#game_over_sound = pygame.mixer.Sound('Sounds/roblox_oof.wav')
+#game_over_sound.set_volume(0.3)
+#level_complete_sound = pygame.mixer.Sound('Sounds/level_win_sound.wav')
+#level_complete_sound.set_volume(0.2)
 
 
 world_data1 = [
@@ -412,7 +414,8 @@ class Button():
         if self.rect.collidepoint(mouse_position):  #if button collides with mouse co-ordinates
             if pygame.mouse.get_pressed()[0] == 1:  #and if button has been pressed
                 self.clicked = True          
-                button_click_sound.play()
+                #button_click_sound.play()      #use for windows
+                subprocess.call(["afplay", "Sounds/button_sound.wav"])     #use for mac
                
         return self.clicked    
 
@@ -454,7 +457,7 @@ def timer(level_status, thetime):
 
 def text_to_screen(text, x, y, condition):    #condition is for if the text is a number with decimals
     if condition:
-        text = round(text/60, 2)
+        text = round(text/90, 2)    #Use 90 for mac, 60 for windows
     text = myfont.render(str(text), True, (255,255,255))
     screen.blit(text, (x, y))
 
@@ -581,10 +584,8 @@ while(running):
                 in_menu = True
 
        
+
         if level_status == 1:
-            if played_gameover_sound == False:
-                game_over_sound.play()
-                played_gameover_sound = True
             restart.button_to_screen()
             
             if change_lives == True:
@@ -592,6 +593,11 @@ while(running):
                 change_lives = False
 
             lives, change_lives = player.no_lives(lives, level_status, thetime, change_lives)
+
+            if played_gameover_sound == False:
+                #game_over_sound.play()     #use for windows
+                #subprocess.call(["afplay", "Sounds/roblox_oof.wav"])       #use for mac
+                played_gameover_sound = True
 
             if restart.pressed():
                 player.reset(100, screen_h - 130)
@@ -609,7 +615,8 @@ while(running):
                 
         if level_status == 2:
             if completed_sound_played == False:
-                level_complete_sound.play()
+                #level_complete_sound.play()
+                subprocess.call(["afplay", "Sounds/level_win_sound.wav"])      #use for mac
                     
             screen.blit(level_completed, (0, 0))
 
