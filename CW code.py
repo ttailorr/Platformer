@@ -1,4 +1,6 @@
+from re import S
 from string import printable
+from tkinter import Y
 import pygame
 from pygame.locals import *
 
@@ -53,6 +55,9 @@ printable = True
 
 played_gameover_sound = False
 completed_sound_played = False
+
+respawn0x = 100
+respawn0y = screen_h - 130 
 
 
 #loading in core images
@@ -119,11 +124,11 @@ world_data0 = [
 [1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 2, 2, 1], 
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 7, 0, 5, 0, 0, 0, 1], 
 [1, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 7, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 1], 
+[1, 7, 0, 0, 2, 2, 4, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 1], 
 [1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 7, 0, 0, 0, 0, 1], 
 [1, 0, 2, 0, 0, 7, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
-[1, 0, 0, 2, 0, 0, 4, 2, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 1], 
+[1, 0, 0, 2, 0, 0, 2, 2, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 1], 
 [1, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 1], 
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 0, 0, 0, 2, 0, 1], 
@@ -166,6 +171,18 @@ fire_list = pygame.sprite.Group()
 fire_list1 = pygame.sprite.Group()
 
 
+class Checkpoint(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self) #calls the constructor of pygame's sprite class
+        image = pygame.image.load('images/dirt.bmp')
+        self.image = pygame.transform.scale(image, (square_size, square_size))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+checkpoint_list = pygame.sprite.Group()
+
+
 class Destination(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self) #calls the constructor of pygame's sprite class
@@ -206,6 +223,9 @@ class World():
                 if square == 3:
                     self.trap = Trap(collumn_number * square_size, row_number * square_size) #creates an instance of Trap class
                     traps.add(self.trap) #stores the instance in this list
+                if square == 4:
+                    self.checkpoint = Checkpoint(collumn_number * square_size, row_number * square_size)
+                    checkpoint_list.add(self.checkpoint)
                 if square == 8:
                     self.destination = Destination(collumn_number * square_size, row_number * square_size)
                     destinations.add(self.destination)
@@ -219,7 +239,7 @@ class World():
         for self.square in self.squares_list:
             screen.blit(self.square[0], self.square[1])  # must draw 2 items to screen because each square in the list is a tuple.                                               # square[0] is the image and square[1] is the rect
 
-    def map_change(self, thetime, theworld, fire, condition, trap, destination):
+    def map_change(self, thetime, theworld, fire, condition, trap, destination, checkpoints):
         screen.blit(background_image, (0, 0))
         text_to_screen(thetime, square_size, square_size, True)
         text_to_screen(lives, screen_w - square_size - 17, square_size, False)
@@ -234,6 +254,9 @@ class World():
         trap.draw(screen)
 
         destination.draw(screen)
+
+        if condition:
+            checkpoints.draw(screen)
 
 real_world0 = World(world_data0, trap_list, destination_list, fire_list)
 real_world1 = World(world_data1, trap_list1, destination_list1, fire_list1)
@@ -272,7 +295,7 @@ class Player():
         self.lives = 3
         self.change_lives = True
 
-    def movement(self, level_status, the_world, traps, destinations, fires):
+    def movement(self, level_status, the_world, traps, destinations, fires, checkpoints, x, y):
         #allowing player to move character
         change_x = 0
         change_y = 0
@@ -347,6 +370,12 @@ class Player():
                 #return level_status
             if pygame.sprite.spritecollide(self, destinations, False):
                 level_status = 2
+            if pygame.sprite.spritecollide(self, checkpoints, False):
+                change_y = 0
+                if map == 0:
+                    x = square_size * 6
+                    y = square_size * 4
+                
 
             self.rect.x += change_x
             self.rect.y += change_y
@@ -359,13 +388,15 @@ class Player():
         #make window show player
         screen.blit(self.image, self.rect)
 
-        return level_status
+        return level_status, x, y
 
-    def no_lives(self, lives, level_status, thetime, change_lives):
+    def no_lives(self, lives, level_status, thetime, change_lives, xco, yco):
         if lives == 0:
             screen.blit(game_over_image, (0, 0))
             text_to_screen(thetime, screen_w//2 - 30, screen_h//2 + 20, True)
             restart.button_to_screen()
+            xco = 100
+            yco = screen_h - 130
             if restart.pressed():
                 player.reset(100, screen_h - 130)
                 level_status = 0
@@ -373,10 +404,10 @@ class Player():
                 change_lives = True
                 lives = 3
             
-        return lives, change_lives
+        return lives, change_lives, xco, yco
 
     def reset(self, x, y):
-        player.__init__(100, screen_h - 130)
+        player.__init__(x, y)
 
     def next_level(self, map, level_status, thetime, lives, condition, sound_condition): #condition is for whether or not we can display time
         completed_button.button_to_screen()
@@ -575,8 +606,8 @@ while(running):
         if map == 0:            
             thetime = timer(level_status, thetime)
 
-            real_world0.map_change(thetime, real_world0, fire_list, True, trap_list, destination_list)
-            level_status = player.movement(level_status, real_world0, trap_list, destination_list, fire_list)
+            real_world0.map_change(thetime, real_world0, fire_list, True, trap_list, destination_list, checkpoint_list)
+            level_status, respawn0x, respawn0y = player.movement(level_status, real_world0, trap_list, destination_list, fire_list, checkpoint_list, respawn0x, respawn0y)
 
             to_menu.button_to_screen()
             if to_menu.pressed():
@@ -602,7 +633,7 @@ while(running):
                 lives -= 1
                 change_lives = False
 
-            lives, change_lives = player.no_lives(lives, level_status, thetime, change_lives)
+            lives, change_lives, respawn0x, respawn0y = player.no_lives(lives, level_status, thetime, change_lives, respawn0x, respawn0y)
 
             if played_gameover_sound == False:
                 if my_os == "Darwin":
@@ -614,7 +645,7 @@ while(running):
                 played_gameover_sound = True
 
             if restart.pressed():
-                player.reset(100, screen_h - 130)
+                player.reset(respawn0x, respawn0y)
                 level_status = 0
                 thetime = 0
                 change_lives = True
@@ -635,6 +666,9 @@ while(running):
                     level_complete_sound.play()
                     
             screen.blit(level_completed, (0, 0))
+
+            respawn0x = 100
+            respawn0y = screen_h - 130
 
             to_menu.button_to_screen()
             if to_menu.pressed():
