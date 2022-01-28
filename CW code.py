@@ -1,6 +1,6 @@
-from re import S
+#from re import S
 from string import printable
-from tkinter import Y
+#from tkinter import Y
 import pygame
 from pygame.locals import *
 
