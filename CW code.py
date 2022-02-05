@@ -16,13 +16,14 @@ if my_os == "Cygwin":
     from pygame import mixer       #use this for windows
     pygame.mixer.pre_init(44100, -16, 2, 512)   #initialising some variables for the mixer
     mixer.init()
+    frames = 60     #this is the fps that the game will be Played at.
 elif my_os == "Darwin":
     import subprocess       #use this for mac
+    frames = 80
 
 
 myfont = pygame.font.SysFont('Bodoni 72', 30)
 
-frames = 90     #this is the fps that the game will be Played at.   Use 90 for mac, 60 for windows
 clock = pygame.time.Clock()     #the Clock method is used to 'clock' the game at the fps above
 
 
