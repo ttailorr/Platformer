@@ -463,12 +463,12 @@ class Button():
         return self.clicked    
 
 restart = Button(restart_image, screen_w//2 - 60, screen_h//2 - 41)
-start = Button(start_image, screen_w//2 - 120, screen_h//2 - 25)
+start = Button(start_image, screen_w//2 - 150, screen_h//2 - 25)
 completed_button = Button(completed, screen_w//2 - 50, screen_h//2 - 75)
-level_select = Button(level_select, screen_w // 2, screen_h//2 - 25)
+level_select = Button(level_select, screen_w // 2 - 50, screen_h//2 - 25)
 level1_button = Button(icon1, screen_w//2 - 100, screen_h//2 - 200)
 level2_button = Button(icon2, screen_w//2, screen_h//2 - 200)
-leaderboard_button = Button(leaderboard_image, screen_w//2 + 150, screen_h//2 - 35)
+leaderboard_button = Button(leaderboard_image, screen_w//2 + 100, screen_h//2 - 35)
 to_menu = Button(back_image, screen_w//2 - 35, 0)
 
 
