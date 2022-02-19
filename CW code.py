@@ -345,7 +345,7 @@ class Player():
 
             #gravity
             self.y_speed += 0.8
-            if self.y_speed > 9.8:  #I used 9.8 because gravity = 9.8N
+            if self.y_speed > 9.8:  #I used 9.8 because gravity = 9.8N. Use of decimals to move rect may be removed in future.
                 self.y_speed = 9.8
             change_y += self.y_speed
 
