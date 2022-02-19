@@ -21,6 +21,7 @@ elif my_os == "Darwin":
     import subprocess       #use this for mac
     frames = 80
 
+frames = 60
 
 myfont = pygame.font.SysFont('Bodoni 72', 30)
 
@@ -80,10 +81,14 @@ icon1 = pygame.image.load('images/1.bmp')
 icon1 = pygame.transform.scale(icon1, (100, 100))
 icon2 = pygame.image.load('images/2.bmp')
 icon2 = pygame.transform.scale(icon2, (100, 100))
+icon3 = pygame.image.load('images/level3.bmp')
+icon3 = pygame.transform.scale(icon3, (100, 100))
 level_completed = pygame.image.load('images/LevelCompleted.bmp')
 level_completed = pygame.transform.scale(level_completed, (screen_w, screen_h))
 leaderboard_image = pygame.image.load('images/leaderboardimage.bmp')
 leaderboard_image = pygame.transform.scale(leaderboard_image, (100, 60))
+leaderboard_image2 = pygame.image.load('images/leaderboard-icon-11.bmp')
+leaderboard_image2 = pygame.transform.scale(leaderboard_image2, (100, 60))
 back_image = pygame.image.load('images/back_to_menu.bmp')
 back_image = pygame.transform.scale(back_image, (70, 56))
 
@@ -468,7 +473,8 @@ completed_button = Button(completed, screen_w//2 - 50, screen_h//2 - 75)
 level_select = Button(level_select, screen_w // 2 - 50, screen_h//2 - 25)
 level1_button = Button(icon1, screen_w//2 - 100, screen_h//2 - 200)
 level2_button = Button(icon2, screen_w//2, screen_h//2 - 200)
-leaderboard_button = Button(leaderboard_image, screen_w//2 + 100, screen_h//2 - 35)
+level3_button = Button(icon3, screen_w//2 - 50, screen_h//2 - 50)
+leaderboard_button = Button(leaderboard_image2, screen_w//2 + 100, screen_h//2 - 35)
 to_menu = Button(back_image, screen_w//2 - 35, 0)
 
 
@@ -576,6 +582,7 @@ while(running):
 
             level1_button.button_to_screen()
             level2_button.button_to_screen()
+            level3_button.button_to_screen()
 
             if level1_button.pressed():
                 in_level_selector = False
